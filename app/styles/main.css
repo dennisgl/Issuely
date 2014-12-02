@@ -91,3 +91,7 @@ body {
 tspan{
   font-size: 1.5em;
 }
+
+#chart{
+  height:450px;
+}

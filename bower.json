@@ -2,8 +2,11 @@
   "name": "issuely",
   "private": true,
   "dependencies": {
-    "c3": "~0.4.6",
     "jquery": "~2.1.1",
-    "underscore": "~1.7.0"
+    "underscore": "~1.7.0",
+    "nvd3": "~1.1.15-beta"
+  },
+  "resolutions": {
+    "d3": "~3.4.4"
   }
 }
