@@ -95,3 +95,7 @@ tspan{
 #chart{
   height:450px;
 }
+
+#container{
+  padding: 20px 20px 20px 20px;
+}

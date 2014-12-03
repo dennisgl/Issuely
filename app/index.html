@@ -10,6 +10,7 @@
     <!-- build:css(.) styles/vendor.css -->
     <!-- bower:css -->
     <link rel="stylesheet" href="bower_components/nvd3/src/nv.d3.css" />
+    <link rel="stylesheet" href="bower_components/semantic-ui/dist/semantic.css" />
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
@@ -20,10 +21,19 @@
     <!--[if lt IE 10]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
-
-    <h1 id="headLine"></h1>
-    <div id="chart"><svg></svg></div>
-
+    <div id="container">
+        <h1 id="title" class="ui header">Issuely - Github issue analysis</h1>
+        <div id="chart"><svg></svg></div>
+        <div>
+            <div class="ui input">
+              <a class="ui huge orange label">Owner</a><input id="ownerInput" type="text" placeholder="owner">
+            </div>
+            <div class="ui input">
+              <a class="ui huge orange label">Repo Name</a><input id="repoInput" type="text" placeholder="Repo name=">
+            </div>
+            <div class="ui huge green button" id="fetchBtn">fetch</div>
+        </div>
+    </div>
 
     <!-- build:js(.) scripts/vendor.js -->
     <!-- bower:js -->
@@ -31,16 +41,15 @@
     <script src="bower_components/underscore/underscore.js"></script>
     <script src="bower_components/d3/d3.js"></script>
     <script src="bower_components/nvd3/nv.d3.js"></script>
+    <script src="bower_components/semantic-ui/dist/semantic.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
 
     <script type="text/javascript">
     $(function(){
-               
-       var r = (/.*?owner=(.+)&repo=(.+)/g).exec(document.location.href    );
-        ownerName = r[1];
-        repoName = r[2]
+        var ownerName, repoName;
+
         $('#headLine').text(repoName);
         var words = function(sentences){
          
@@ -470,7 +479,6 @@
         blackList.push(repoName);
         var render = function(resultData) {
             var freqResult = words(_.pluck(resultData,'body'));
-            console.log('ran', freqResult[0]);
             freqResult = _.filter(freqResult, function(item){
                 return item.value>=5 && !_.contains(blackList, item.label);
             });freqResult = freqResult.slice(0,20);
@@ -511,7 +519,16 @@
                 setTimeout(fetch,1000);
             }
         };
-        fetch();
+        
+        $('#fetchBtn').click(function(){
+            ownerName = $('#ownerInput').val();
+            $('#ownerInput').val('');
+            repoName = $('#repoInput').val();
+            $('#repoInput').val('');
+            $('#title').text(repoName);
+            fetch();
+        });
+
         window._data = _data;
     });
 
