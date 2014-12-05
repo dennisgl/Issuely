@@ -2,6 +2,10 @@
 
 $(document).on('ready', function(){
         var ownerName, repoName;
+        var dn = 1;
+        var _idf=window._idf={};
+        var _data = {key:repoName, values: []};
+        
 
         $('#headLine').text(repoName);
         var words = function(sentences){
@@ -13,7 +17,7 @@ $(document).on('ready', function(){
           var ignore = ['and','the','to','a','of','for','as','i','with','it','is','on','that','this','can','in','be','has','if'];
           ignore = (function(){
             var o = {}; // object prop checking > in array checking
-            for ( var i=0; i<60000; i++) {
+            for ( var i=0; i<100000; i++) {
                 o[i] = true;
             }
             var iCount = ignore.length;
@@ -45,7 +49,8 @@ $(document).on('ready', function(){
             return (a.value > b.value) ? -1 : ((a.value < b.value) ? 1 : 0);
           });
         };
-        var _data = {key:repoName, values: []};
+
+
         var chart;
         nv.addGraph(function() {
           chart = nv.models.discreteBarChart()
@@ -58,11 +63,13 @@ $(document).on('ready', function(){
           chart.yAxis
                 .tickFormat(d3.format('.0f'));
 
+
           d3.select('#chart svg')
             .datum(_data)
             .transition().duration(500)
             .call(chart)
             ;
+        d3.selectAll('g.tick text').style({'font-size':'1.3em'});
 
           nv.utils.windowResize(chart.update);
 
@@ -71,17 +78,45 @@ $(document).on('ready', function(){
 
         var render = function(resultData) {
             var freqResult = words(_.pluck(resultData,'body'));
+
+            var maxf = _.max(_.pluck(freqResult,'value'));
+            var i;
+            for ( i = 0; i < freqResult.length; i++ ) {
+                // freqResult[i].value = 0.5 + 0.5*freqResult[i].value/maxf;
+                if ( typeof _idf[freqResult[i].label] === 'undefined' ) {
+                    _idf[freqResult[i].label]={};
+                    _idf[freqResult[i].label].f = 1;
+                    _idf[freqResult[i].label].prevDn = dn;
+                } else {
+                    if (_idf[freqResult[i].label].prevDn < dn) {
+                        _idf[freqResult[i].label].prevDn = dn;
+                        _idf[freqResult[i].label].f++;
+                    }
+                }
+                _idf[freqResult[i].label].v = Math.log(dn/_idf[freqResult[i].label].f);
+
+                freqResult[i].value *= _idf[freqResult[i].label].v;
+            }
+
             freqResult = _.filter(freqResult, function(item){
-                return item.value>=5 && !_.contains(blackList, item.label);
-            });freqResult = freqResult.slice(0,20);
+                return !_.contains(blackList, item.label);
+            });
+
+            freqResult.sort(function(a,b){
+                return (a.value > b.value) ? -1 : ((a.value < b.value) ? 1 : 0);
+            })
+
+            freqResult = freqResult.slice(0,20);
             // Array.prototype.splice.apply(_data.values,freqResult);
             _data.values = freqResult;
-
+            console.log('#', _data.values)
             d3.select('#chart svg')
             .datum([_data])
             .transition().duration(500)
             .call(chart)
             ;
+
+            d3.selectAll('g.tick text').style({'font-size':'1.3em'});
 
 
             // console.log('ch',chart.update);
@@ -94,8 +129,8 @@ $(document).on('ready', function(){
         var fetch = function() {
             $.getJSON('https://api.github.com/repos/'+ownerName+'/'+repoName+'/issues',
             {
-                client_id:'5e69207e53e937646e91',
-                client_secret: '6dba8bee25c46db058976ce2e83b83c8a375ea28',
+                client_id:'',
+                client_secret: '',
                 page:pageNum++,
                 per_page:100
             },function(data){
@@ -107,12 +142,17 @@ $(document).on('ready', function(){
                 render(resultData);
                 console.log('yeap');
             }).fail(function(){fetchDone=true;});
+
             if (!fetchDone) {
-                setTimeout(fetch,1000);
+                setTimeout(fetch,500);
             }
         };
         
         $('#fetchBtn').click(function(){
+            resultData=[];
+            fetchDone = false;
+            pageNum = 1;
+            dn++;
             ownerName = $('#ownerInput').val();
             $('#ownerInput').val('');
             repoName = $('#repoInput').val();
@@ -120,8 +160,8 @@ $(document).on('ready', function(){
 
             blackList.push(ownerName);
             blackList.push(repoName);
-            
-            $('#title').text(repoName);
+
+            $('#title').text('Top 20 important keywords from issues of ['+repoName+'] repository');
             fetch();
         });
 

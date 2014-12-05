@@ -2,7 +2,7 @@
 <html class="no-js">
   <head>
     <meta charset="utf-8">
-    <title>Issuely</title>
+    <title>IZZUE</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
     <link rel="shortcut icon" href="/favicon.ico">
@@ -22,7 +22,7 @@
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
     <div id="container">
-        <h1 id="title" class="ui header">Issuely - Github projects issues analysis</h1>
+        <h1 id="title" class="ui header"><i class="crosshairs icon"></i>Izzue - Github projects issues analysis</h1>
         <div id="chart"><svg></svg></div>
         <div>
             <div class="ui input">
@@ -33,6 +33,14 @@
             </div>
             <div class="ui huge green button" id="fetchBtn">fetch</div>
         </div>
+        <div class="ui inverse button" onclick="$('#ownerInput').val('jashkenas');$('#repoInput').val('underscore');">Underscore</div>
+        <div class="ui inverse button" onclick="$('#ownerInput').val('angular');$('#repoInput').val('angular.js');">Angular.js</div>
+        <div class="ui inverse button" onclick="$('#ownerInput').val('mbostock');$('#repoInput').val('d3');">d3</div>
+        <div class="ui inverse button" onclick="$('#ownerInput').val('joyent');$('#repoInput').val('node');">node</div>
+        <div class="ui inverse button" onclick="$('#ownerInput').val('angular-ui');$('#repoInput').val('bootstrap');">bootstrap(angular)</div>
+        <div class="ui inverse button" onclick="$('#ownerInput').val('angular-ui');$('#repoInput').val('ui-router');">ui-router</div>
+        <div class="ui inverse button" onclick="$('#ownerInput').val('facebook');$('#repoInput').val('react');">react</div>
+
     </div>
 
     <!-- build:js(.) scripts/vendor.js -->
